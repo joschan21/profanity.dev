@@ -1,0 +1,6 @@
+name = "example"
+compatibility_date = "2024-04-16"
+
+[vars]
+VECTOR_URL=""
+VECTOR_TOKEN=""
