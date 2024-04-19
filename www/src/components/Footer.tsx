@@ -36,7 +36,7 @@ const Footer = () => {
               <Twitter className='h-4 w-4 text-gray-600 transition-colors group-hover:text-black' />
             </a>
             <a
-              href='https://github.com/joschan21'
+              href='https://github.com/joschan21/profanity.dev/'
               target='_blank'
               rel='noreferrer'
               className='group rounded-full border border-gray-200 p-2 transition-colors hover:bg-gray-100'>
