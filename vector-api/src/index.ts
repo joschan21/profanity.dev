@@ -45,10 +45,9 @@ app.post('/', async (c) => {
 
     const chunks = splitTextIntoChunks(message, 3)
 
-    // due to multiple chunking approaches, prevent duplicate flagging
     const flaggedFor = new Set()
 
-    const idk = await Promise.all(
+    const vectorRes = await Promise.all(
       chunks.map(async (chunk) => {
         const [vector] = await index.query({
           topK: 1,
@@ -64,7 +63,7 @@ app.post('/', async (c) => {
       })
     )
 
-    const mostProfaneChunk = idk.sort((a, b) =>
+    const mostProfaneChunk = vectorRes.sort((a, b) =>
       a.score > b.score ? -1 : 1
     )[0]!
 
@@ -72,7 +71,7 @@ app.post('/', async (c) => {
       return c.json({
         isProfanity: mostProfaneChunk.score > PROFANITY_THRESHOLD,
         score: mostProfaneChunk.score,
-        flaggedFor: Array.from(flaggedFor),
+        flaggedFor: mostProfaneChunk.metadata!.text,
       })
     } else {
       return c.json({

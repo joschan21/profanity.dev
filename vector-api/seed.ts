@@ -54,7 +54,7 @@ async function parseCSV(
 
 const STEP = 30
 
-const doshit = async () => {
+const seed = async () => {
   for (let i = 0; i < 1599; i += STEP) {
     const start = i
     const end = i + STEP
@@ -71,4 +71,4 @@ const doshit = async () => {
   }
 }
 
-doshit()
+seed()
