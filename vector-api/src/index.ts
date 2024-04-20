@@ -5,7 +5,7 @@ import { cors } from 'hono/cors'
 
 // there is bias in the underlying open-source embedding models
 // so these are flagged inappropriately
-const WHITELIST = ['black', 'swear']
+const WHITELIST = ['black', 'swear', 'mom', 'mum', 'mother', 'your']
 const PROFANITY_THRESHOLD = 0.86
 
 type Environment = {
@@ -43,39 +43,63 @@ app.post('/', async (c) => {
       .filter((word) => !WHITELIST.includes(word))
       .join(' ')
 
-    const chunks = splitTextIntoChunks(message, 3)
+    const semanticChunks = splitTextIntoChunks(message, 4) // for larger context
+    const wordChunks = splitTextIntoChunks(message, 1) // for similar swear words
 
-    const flaggedFor = new Set()
+    const flaggedFor = new Set<{ score: number; text: string }>()
 
-    const vectorRes = await Promise.all(
-      chunks.map(async (chunk) => {
+    const vectorRes = await Promise.all([
+      // this additional step adds slight latency but improves output on long text massively
+      ...wordChunks.map(async (wordChunk) => {
         const [vector] = await index.query({
           topK: 1,
-          data: chunk,
+          data: wordChunk,
+          includeMetadata: true,
+        })
+
+        if (vector && vector.score > 0.95) {
+          flaggedFor.add({
+            text: vector.metadata!.text as string,
+            score: vector.score,
+          })
+        }
+
+        return { score: 0 }
+      }),
+      ...semanticChunks.map(async (semanticChunk) => {
+        const [vector] = await index.query({
+          topK: 1,
+          data: semanticChunk,
           includeMetadata: true,
         })
 
         if (vector && vector.score > PROFANITY_THRESHOLD) {
-          flaggedFor.add(vector.metadata!.text)
+          flaggedFor.add({
+            text: vector.metadata!.text as string,
+            score: vector.score,
+          })
         }
 
         return vector!
-      })
-    )
+      }),
+    ])
 
-    const mostProfaneChunk = vectorRes.sort((a, b) =>
-      a.score > b.score ? -1 : 1
-    )[0]!
-
-    if (mostProfaneChunk.score > PROFANITY_THRESHOLD) {
+    if (flaggedFor.size > 0) {
+      const sorted = Array.from(flaggedFor).sort((a, b) =>
+        a.score > b.score ? -1 : 1
+      )[0]
       return c.json({
-        isProfanity: mostProfaneChunk.score > PROFANITY_THRESHOLD,
-        score: mostProfaneChunk.score,
-        flaggedFor: mostProfaneChunk.metadata!.text,
+        isProfanity: true,
+        score: sorted?.score,
+        flaggedFor: sorted?.text,
       })
     } else {
+      const mostProfaneChunk = vectorRes.sort((a, b) =>
+        a.score > b.score ? -1 : 1
+      )[0]!
+
       return c.json({
-        isProfanity: mostProfaneChunk.score > PROFANITY_THRESHOLD,
+        isProfanity: false,
         score: mostProfaneChunk.score,
       })
     }
