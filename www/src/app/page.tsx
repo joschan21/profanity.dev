@@ -29,6 +29,7 @@ export default async function Home() {
                     i
                     <span className='absolute -left-4 -right-4 translate-x-[15px] md:translate-x-[3px] md:-top-1.5'>
                       <img
+                        alt='swaer-emoji'
                         src='/swear-emoji.png'
                         className='h-5 w-5 object-contain md:h-8 md:w-12'
                       />
@@ -126,6 +127,7 @@ export default async function Home() {
 
           <div className='relative px-8 sm:px-16 md:px-0 mt-28 md:mx-auto md:max-w-xl w-full lg:mx-0 lg:mt-20'>
             <img
+              alt='try-it'
               aria-hidden='true'
               src='/try-it.png'
               className='absolute w-40 left-2/3 -top-2 select-none hidden sm:block'
@@ -177,6 +179,7 @@ export default async function Home() {
                 <div className='absolute -z-10 left-1/2 -translate-x-1/2 -top-[90px]'>
                   <div className='absolute inset-x-0 -bottom-0 h-16 bg-gradient-to-t 0 from-blue-100 pointer-events-none'></div>
                   <img
+                    alt='shocked-emoji'
                     src='/shocked-emoji.png'
                     className='h-24 relative -z-10 select-none'
                   />
@@ -195,6 +198,7 @@ export default async function Home() {
                 <div className='absolute -z-10 left-1/2 -translate-x-1/2 -top-[90px]'>
                   <div className='absolute inset-x-0 -bottom-0 h-16 bg-gradient-to-t from-blue-100 pointer-events-none'></div>
                   <img
+                    alt='swear-emoji'
                     src='/swear-emoji.png'
                     className='relative -z-10 h-24 select-none'
                   />
@@ -234,7 +238,7 @@ export default async function Home() {
             <div
               aria-hidden='true'
               className='absolute -left-52 top-1/4 z-10 select-none'>
-              <img src='/3mindemo.png' />
+              <img alt='3-min-demo' src='/3mindemo.png'  />
             </div>
           </div>
 
