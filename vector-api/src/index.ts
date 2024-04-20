@@ -43,7 +43,7 @@ app.post('/', async (c) => {
       .filter((word) => !WHITELIST.includes(word))
       .join(' ')
 
-    const chunks = splitTextIntoChunks(message, 4)
+    const chunks = splitTextIntoChunks(message, 3)
 
     // due to multiple chunking approaches, prevent duplicate flagging
     const flaggedFor = new Set()
@@ -51,7 +51,7 @@ app.post('/', async (c) => {
     const idk = await Promise.all(
       chunks.map(async (chunk) => {
         const [vector] = await index.query({
-          topK: 5,
+          topK: 1,
           data: chunk,
           includeMetadata: true,
         })
