@@ -15,7 +15,14 @@ const Demo = () => {
   const { data, mutate, isPending, error } = useMutation({
     mutationKey: ['check-profanity'],
     mutationFn: checkProfanity,
+    onSettled: (data) => {
+      if (data && 'error' in data) {
+        throw new Error(data.error)
+      }
+    },
   })
+
+  const successData = data && !('error' in data) ? data : undefined
 
   return (
     <div className='flex flex-col gap-5 items-center'>
@@ -46,35 +53,33 @@ const Demo = () => {
         </div>
 
         <div className='h-32 mt-4 rounded-lg border-2 border-dashed border-zinc-300 text-sm flex items-center justify-center'>
-          {data ? (
+          {successData ? (
             <div className='flex flex-col items-center text-center'>
               <p className='font-bold'>
-                {data.score > 0.95 ? (
+                {successData.score > 0.95 ? (
                   <span>
                     🚨🚨😱😱 OH GOD, VERY BIG PROFANITY DETECTED!! 🚨🚨😱😱{' '}
                   </span>
-                ) : data.score > 0.9 ? (
+                ) : successData.score > 0.9 ? (
                   <span>🚨😱 BIG PROFANITY DETECTED!! 🚨😱 </span>
-                ) : data.score > 0.88 ? (
+                ) : successData.score > 0.88 ? (
                   <span>🚨 PROFANITY DETECTED!! 🚨 </span>
-                ) : data.score >= 0.85 ? (
+                ) : successData.score >= 0.85 ? (
                   <span>😱 PRETTY SURE THIS IS A PROFANITY 😱</span>
-                ) : data.score < 0.85 ? (
+                ) : successData.score < 0.85 ? (
                   <span>Crispy clean input, no profanities :)) 👍👍</span>
                 ) : null}
               </p>
 
               <p className='text-sm text-zinc-700'>
-                score (higher is worse): {data.score.toFixed(3)} 
+                score (higher is worse): {successData.score.toFixed(3)}
               </p>
             </div>
           ) : (
             <p className='text-zinc-700'>Results will be shown here</p>
           )}
         </div>
-        {/* <p className='text-sm'>
-        Or send a <pre className='inline'>POST</pre> request with <pre className='inline'>&#123;"message": "..."&#125;</pre> to the above url :)
-      </p> */}
+
         {error ? (
           <p className='text-red-600 text-sm mt-2'>
             <span className='font-semibold'>Error:</span> {error.message}
