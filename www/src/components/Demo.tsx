@@ -2,7 +2,7 @@
 
 import { checkProfanity } from '@/actions'
 import { useMutation } from '@tanstack/react-query'
-import { useState } from 'react'
+import { FormEvent, useState } from 'react'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Icons } from './Icons'
@@ -11,6 +11,11 @@ const Demo = () => {
   const [message, setMessage] = useState<string>(
     'this is definitely not a swear word'
   )
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    mutate({ message });
+  }
 
   const { data, mutate, isPending, error } = useMutation({
     mutationKey: ['check-profanity'],
@@ -36,7 +41,7 @@ const Demo = () => {
             <p className='break-all'>https://vector.profanity.dev</p>
           </div>
         </div>
-        <div className='relative flex flex-col sm:flex-row items-center gap-2 mt-6 h-full sm:h-9'>
+        <form onSubmit={handleSubmit} className='relative flex flex-col sm:flex-row items-center gap-2 mt-6 h-full sm:h-9'>
           <Input
             className='bg-white h-9'
             value={message}
@@ -47,10 +52,10 @@ const Demo = () => {
           <Button
             disabled={isPending}
             className='h-9 w-full sm:w-fit'
-            onClick={() => mutate({ message })}>
+            type='submit'>
             Profanity check
           </Button>
-        </div>
+        </form>
 
         <div className='h-32 mt-4 rounded-lg border-2 border-dashed border-zinc-300 text-sm flex items-center justify-center'>
           {successData ? (
