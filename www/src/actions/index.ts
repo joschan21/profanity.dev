@@ -13,6 +13,10 @@ type APISuccess = {
 }
 
 export const checkProfanity = async ({ message }: { message: string }) => {
+  if (message.trim().split(/\s+/).length <= 1) {
+    throw new Error('Please enter a longer text, at least 2 words.')
+  }
+
   const res = await fetch('https://vector.profanity.dev', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
