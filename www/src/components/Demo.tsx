@@ -40,6 +40,9 @@ const Demo = () => {
           <Input
             className='bg-white h-9'
             value={message}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') mutate({ message })
+            }}
             onChange={({ target }) => {
               setMessage(target.value)
             }}
