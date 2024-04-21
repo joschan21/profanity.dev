@@ -72,7 +72,8 @@ const Demo = () => {
               </p>
 
               <p className='text-sm text-zinc-700'>
-                score (higher is worse): {successData.score.toFixed(3)}
+                score (higher is worse): <b>{successData.score.toFixed(3)}</b>
+                 {" "} & took : <b>{successData.latency} ms</b>
               </p>
             </div>
           ) : (
