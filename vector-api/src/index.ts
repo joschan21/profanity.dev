@@ -40,7 +40,7 @@ app.post('/', async (c) => {
 
     message = message
       .split(' ')
-      .filter((word) => !WHITELIST.includes(word))
+      .filter((word) => !WHITELIST.includes(word.toLowerCase()))
       .join(' ')
 
     const semanticChunks = splitTextIntoChunks(message, 4) // for larger context
