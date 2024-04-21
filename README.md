@@ -28,8 +28,8 @@
 
 ```sh
 └── profanity.dev/
-    ├── tensor-api # Hono server
-    ├── vector-api # Hono server
+    ├── tensor-api # Hono serverless api
+    ├── vector-api # Hono serverless api
     └── www # NextJs application
 ```
 
