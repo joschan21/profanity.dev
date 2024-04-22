@@ -7,7 +7,7 @@ export const Icons = {
       viewBox='0 0 1631 472'
       {...props}
       fill='none'>
-      <g clip-path='url(#upstash_white_bg)'>
+      <g clipPath='url(#upstash_white_bg)'>
         <path
           fill='#00C98D'
           d='M.422 412.975c78.105 78.104 204.738 78.104 282.843 0 78.104-78.105 78.104-204.738 0-282.843l-35.356 35.355c58.579 58.579 58.579 153.554 0 212.132-58.578 58.579-153.553 58.579-212.132 0L.422 412.975Z'
@@ -22,12 +22,12 @@ export const Icons = {
         />
         <path
           fill='#fff'
-          fill-opacity='.4'
+          fillOpacity='.4'
           d='M353.974 59.421c-78.105-78.105-204.738-78.105-282.842 0-78.106 78.105-78.106 204.738 0 282.843l35.354-35.355c-58.578-58.579-58.578-153.554 0-212.132 58.579-58.579 153.554-58.579 212.132 0l35.356-35.356Z'
         />
         <path
           fill='#fff'
-          fill-opacity='.4'
+          fillOpacity='.4'
           d='M283.264 130.132c-39.052-39.052-102.37-39.052-141.422 0-39.053 39.053-39.053 102.369 0 141.421l35.355-35.355c-19.526-19.526-19.526-51.184 0-70.711 19.526-19.526 51.184-19.526 70.711 0l35.356-35.355Z'
         />
       </g>
@@ -45,15 +45,15 @@ export const Icons = {
   arrow: (props: LucideProps) => (
     <svg {...props} viewBox='145.281 153.683 762.1 455.8'>
       <g
-        stroke-width='7'
+        strokeWidth='7'
         stroke='currentColor'
         fill='none'
-        stroke-linecap='round'
-        stroke-linejoin='round'
-        stroke-dasharray='17 18'>
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        strokeDasharray='17 18'>
         <path
           d='M 520 216 C 524 243 533 256 557 267 Q 654 317 497 395 Q 398 448 496 535 C 511 551 510.6667 562.6667 514 571'
-          marker-end='url(#SvgjsMarker2053)'></path>
+          markerEnd='url(#SvgjsMarker2053)'></path>
       </g>
       <defs>
         <marker
