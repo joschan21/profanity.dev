@@ -1,11 +1,11 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { Highlight, themes } from 'prism-react-renderer'
+import { Highlight, Language, themes } from 'prism-react-renderer'
 
-const Code = ({ code }: { code: string }) => {
+const Code = ({ code, language }: { code: string, language: Language }) => {
   return (
-    <Highlight theme={themes.vsDark} code={code} language='tsx'>
+    <Highlight theme={themes.vsDark} code={code} language={language}>
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <pre style={style} className={cn(className, 'w-fit')}>
           {tokens.map((line, i) => {

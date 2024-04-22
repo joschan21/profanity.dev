@@ -246,9 +246,7 @@ export default async function Home() {
             id='api'
             className='w-full flex flex-col items-center mt-12 px-4'>
             <p className='font-bold text-xl my-4'>Make an API request</p>
-            <div className='relative max-w-2xl w-full text-left p-5 bg-[#1e1e1e] rounded-xl shadow'>
-              <CodeSection />
-            </div>
+            <CodeSection />
           </div>
         </div>
       </section>
