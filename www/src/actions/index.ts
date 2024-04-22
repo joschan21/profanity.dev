@@ -18,6 +18,13 @@ export const checkProfanity = async ({ message }: { message: string }) => {
       return { error: 'Please enter a longer text, at least 2 words.' }
     }
 
+    if (message.trim().split(/\s+/).length > 35) {
+      return {
+        error:
+          "Due to a current Cloudflare limit, we can only scan texts up to 35 words. I'm working on removing this limit.",
+      }
+    }
+
     const res = await fetch('https://vector.profanity.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
