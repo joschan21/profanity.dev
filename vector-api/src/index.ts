@@ -2,6 +2,13 @@ import { Index } from '@upstash/vector'
 import { Hono } from 'hono'
 import { env } from 'hono/adapter'
 import { cors } from 'hono/cors'
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
+
+const splitter = new RecursiveCharacterTextSplitter({
+  chunkSize: 25,
+  separators: [' '],
+  chunkOverlap: 15,
+})
 
 // there is bias in the underlying open-source embedding models
 // so these are flagged inappropriately
@@ -43,8 +50,8 @@ app.post('/', async (c) => {
       .filter((word) => !WHITELIST.includes(word.toLowerCase()))
       .join(' ')
 
-    const semanticChunks = splitTextIntoChunks(message, 4) // for larger context
-    const wordChunks = splitTextIntoChunks(message, 1) // for similar swear words
+    const semanticChunks = await splitTextIntoChunks(message) // for larger context
+    const wordChunks = message.split(/\s/) // for similar swear words
 
     const flaggedFor = new Set<{ score: number; text: string }>()
 
@@ -110,24 +117,9 @@ app.post('/', async (c) => {
   }
 })
 
-function splitTextIntoChunks(text: string, wordsPerChunk: number): string[] {
-  const words = text.split(/\s+/)
-  const chunks: string[] = []
-
-  for (let i = 0; i < words.length; i += wordsPerChunk) {
-    let nextIndex = i + wordsPerChunk
-
-    if (nextIndex > words.length && i > 0 && words.length - i < 2) {
-      chunks[chunks.length - 1] = words
-        .slice(i - wordsPerChunk, words.length)
-        .join(' ')
-      break
-    }
-
-    const chunk = words.slice(i, nextIndex).join(' ')
-    chunks.push(chunk)
-  }
-
+async function splitTextIntoChunks(text: string): Promise<string[]> {
+  const documents = await splitter.createDocuments([text])
+  const chunks = documents.map((chunk) => chunk.pageContent)
   return chunks
 }
 

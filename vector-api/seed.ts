@@ -2,6 +2,7 @@ import { Index } from '@upstash/vector'
 import csv from 'csv-parser'
 import fs from 'fs'
 import { Transform } from 'stream'
+import "dotenv/config"
 
 const index = new Index({
   url: process.env.VECTOR_URL,
@@ -55,7 +56,7 @@ async function parseCSV(
 const STEP = 30
 
 const seed = async () => {
-  for (let i = 0; i < 1599; i += STEP) {
+  for (let i = 0; i < 1464; i += STEP) {
     const start = i
     const end = i + STEP
 
