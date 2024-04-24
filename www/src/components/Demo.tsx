@@ -38,7 +38,7 @@ const Demo = () => {
         </div>
         <div className='relative flex flex-col sm:flex-row items-center gap-2 mt-6 h-full sm:h-9'>
           <Input
-            className='bg-white h-9'
+            className='bg-white h-9 w-full'
             value={message}
             onKeyDown={(e) => {
               if (e.key === 'Enter') mutate({ message })
@@ -49,9 +49,23 @@ const Demo = () => {
           />
           <Button
             disabled={isPending}
-            className='h-9 w-full sm:w-fit'
-            onClick={() => mutate({ message })}>
-            Profanity check
+            className='h-9 w-full sm:w-36 shrink-0'
+            onClick={() => mutate({ message })}
+          >
+            {isPending ? (
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                viewBox='0 0 24 24'
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                className='animate-spin h-4 w-4'
+              >
+                <path d='M21 12a9 9 0 1 1-6.219-8.56' />
+              </svg>
+            ) : <span>Profanity Check</span>}
           </Button>
         </div>
 
