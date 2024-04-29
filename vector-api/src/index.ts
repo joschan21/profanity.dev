@@ -57,6 +57,7 @@ app.post('/', async (c) => {
     }
 
     message = message
+      .normalize("NFKC") // converts characters that look similar to english characters; ex. from https://lingojam.com/FancyTextGenerator
       .split(/\s/)
       .filter((word) => !WHITELIST.includes(word.toLowerCase()))
       .join(' ')
