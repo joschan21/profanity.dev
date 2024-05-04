@@ -18,6 +18,10 @@ app.post("/", async (c) => {
     const body = await c.req.json()
     const { message } = body
 
+    if (!message) {
+      return c.json({ error: "Missing message in request body" }, 400)
+    }
+
     const openaiRes = await openai.embeddings.create({
       input: message,
       model: "text-embedding-3-small",
@@ -43,7 +47,8 @@ app.post("/", async (c) => {
       note: "1 is very toxic/profane, 0 is not profane at all",
     })
   } catch (err) {
-    return c.json({ error: JSON.stringify(err) })
+    console.error(err)
+    return c.json({ error: "An error occurred during prediction" }, 500)
   }
 })
 
