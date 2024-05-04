@@ -5,7 +5,7 @@ import { OpenAI } from "openai"
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_KEY,
-})
+});
 
 const writeStream = fs.createWriteStream("prepared_dataset.csv", { flags: "a" })
 
@@ -69,26 +69,32 @@ const prepare = async () => {
 
     const data = await parseCSV("raw_dataset.csv", start, end)
 
-    data.forEach(async (row) => {
-      const hate = Number(row.severe_toxic)
-      const obscene = Number(row.obscene)
-      const insult = Number(row.insult)
-      const identity = Number(row.identity_hate)
-      const threat = Number(row.threat)
+    for (const row of data) {
+      try {
+        const hate = Number(row.severe_toxic)
+        const obscene = Number(row.obscene)
+        const insult = Number(row.insult)
+        const identity = Number(row.identity_hate)
+        const threat = Number(row.threat)
 
-      const isFlagged = hate || obscene || insult || identity || threat
+        const isFlagged = hate || obscene || insult || identity || threat
 
-      const stuff = await openai.embeddings.create({
-        input: row.comment_text,
-        model: "text-embedding-3-small",
-      })
+        const stuff = await openai.embeddings.create({
+          input: row.comment_text,
+          model: "text-embedding-3-small",
+        })
 
-      const vector = stuff.data[0].embedding
+        const vector = stuff.data[0].embedding
 
-      writeStream.write(`[${vector}]|${isFlagged ? 1 : 0}` + "\n")
+        writeStream.write(`[${vector}]|${isFlagged ? 1 : 0}` + "\n")
 
-      await new Promise((resolve) => setTimeout(resolve, 500))
-    })
+        await new Promise((resolve) => setTimeout(resolve, 500))
+      } catch (error) {
+        console.error(
+          `Error processing row ${row.id}: ${error.message}`
+        )
+      }
+    }
   }
 }
 
