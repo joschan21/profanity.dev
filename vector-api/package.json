@@ -21,6 +21,7 @@
     "wrangler": "^3.50.0"
   },
   "dependencies": {
+    "@hono/zod-validator": "^0.2.1",
     "@types/body-parser": "^1.19.5",
     "@upstash/vector": "^1.0.7",
     "body-parser": "^1.20.2",
@@ -29,6 +30,7 @@
     "hono": "^4.2.4",
     "langchain": "^0.1.34",
     "openai": "^4.35.0",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "zod": "^3.23.7"
   }
 }

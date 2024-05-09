@@ -3,6 +3,8 @@ import { Hono } from 'hono'
 import { env } from 'hono/adapter'
 import { cors } from 'hono/cors'
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
+import { zValidator } from '@hono/zod-validator';
+import { z } from 'zod'
 
 const semanticSplitter = new RecursiveCharacterTextSplitter({
   chunkSize: 25,
@@ -24,11 +26,11 @@ const app = new Hono()
 
 app.use(cors())
 
-app.post('/', async (c) => {
-  if (c.req.header('Content-Type') !== 'application/json') {
-    return c.json({ error: 'JSON body expected.' }, { status: 406 })
-  }
+const zodSchema = z.object({
+  message: z.string().min(1, { message: "Message argument is required." }) 
+})
 
+app.post('/', zValidator('json', zodSchema), async (c) => {
   try {
     const { VECTOR_TOKEN, VECTOR_URL } = env<Environment>(c)
 
@@ -38,12 +40,7 @@ app.post('/', async (c) => {
       cache: false, // disable needed for cf worker deployment
     })
 
-    const body = await c.req.json()
-    let { message } = body as { message: string }
-
-    if (!message) {
-      return c.json({ error: 'Message argument is required.' }, { status: 400 })
-    }
+    let { message } = c.req.valid('json');
 
     // this is because of the cloudflare worker sub-request limit
     if (message.split(/\s/).length > 35 || message.length > 1000) {
