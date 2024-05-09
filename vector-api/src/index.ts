@@ -26,7 +26,11 @@ const app = new Hono()
 
 app.use(cors())
 
-app.post('/', zValidator('json', z.object({ message: z.string() })), async (c) => {
+const zodSchema = z.object({
+  message: z.string().min(1, { message: "Message argument is required." }) 
+})
+
+app.post('/', zValidator('json', zodSchema), async (c) => {
   try {
     const { VECTOR_TOKEN, VECTOR_URL } = env<Environment>(c)
 
@@ -37,10 +41,6 @@ app.post('/', zValidator('json', z.object({ message: z.string() })), async (c) =
     })
 
     let { message } = c.req.valid('json');
-
-    if (!message) {
-      return c.json({ error: 'Message argument is required.' }, { status: 400 })
-    }
 
     // this is because of the cloudflare worker sub-request limit
     if (message.split(/\s/).length > 35 || message.length > 1000) {
