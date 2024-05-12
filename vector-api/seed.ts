@@ -60,7 +60,7 @@ const seed = async () => {
     const start = i
     const end = i + STEP
 
-    const data = await parseCSV('training_data.csv', start, end)
+    const data = await parseCSV('training_data/en.csv', start, end)
 
     const formatted = data.map((row, batchIndex) => ({
       data: row.text,
