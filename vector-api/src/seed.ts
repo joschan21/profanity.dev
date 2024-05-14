@@ -1,75 +1,87 @@
 import { Index } from '@upstash/vector'
-import csv from 'csv-parser'
 import fs from 'fs'
-import { Transform } from 'stream'
+import { createInterface } from 'readline'
 import "dotenv/config"
+import { basename, join } from 'path'
 
 const index = new Index({
   url: process.env.VECTOR_URL,
   token: process.env.VECTOR_TOKEN,
 })
 
-interface Row {
-  text: string
+const UPSERT_ROWS_BUFSZ = 100;
+
+const DATASETS_DIR = 'training_data';
+const datasets = fs.readdirSync(DATASETS_DIR);
+
+type Language = string & { length: 3 };
+
+/**
+ * Send (upsert) a packet to the index, given a namespace and an id offset
+ * @param namespace The vector namespace where the data should be loaded
+ * @param rows The actual string rows
+ * @param offset The id offset (defaults to 0)
+ * @returns The index upsert promise
+ */
+function send(namespace: string, rows: string[], offset = 0) {
+
+  // build the packet with proper type checking
+  const packet: Parameters<Index["upsert"]>[0] = rows.map((row, i) => ({
+    id: offset + i,
+    data: row,
+    metadata: { text: row }
+  }));
+
+  // return the upsert promise (no need to async/await)
+  return index.upsert(packet, { namespace });
+
 }
 
-function createLineRangeStream(startLine: number, endLine: number) {
-  let currentLine = 0
-  return new Transform({
-    transform(chunk, _, callback) {
-      if (currentLine >= startLine && currentLine < endLine) {
-        this.push(chunk)
-      }
-      currentLine++
-      if (currentLine >= endLine) {
-        this.push(null)
-      }
-      callback()
-    },
-    objectMode: true,
-  })
-}
+/**
+ * Seed the index from a ReadStream, using a language as namespace
+ * @param input An fs ReadStream to use as source input
+ * @param language The language of the content read from the source input
+ */
+async function seed(input: fs.ReadStream, language: Language) {
 
-async function parseCSV(
-  filePath: string,
-  startLine: number,
-  endLine: number
-): Promise<Row[]> {
-  return new Promise((resolve, reject) => {
-    const rows: Row[] = []
+  console.info(`> Seeding ${language} namespace`)
 
-    fs.createReadStream(filePath)
-      .pipe(csv({ separator: ',' }))
-      .pipe(createLineRangeStream(startLine, endLine))
-      .on('data', (row) => {
-        rows.push(row)
-      })
-      .on('error', (error) => {
-        reject(error)
-      })
-      .on('end', () => {
-        resolve(rows)
-      })
-  })
-}
+  // create a readline interface to read file line-by-line
+  const rl = createInterface({ input, crlfDelay: Infinity });
 
-const STEP = 30
+  // the entry id offset
+  var offset = 0;
 
-const seed = async () => {
-  for (let i = 0; i < 1464; i += STEP) {
-    const start = i
-    const end = i + STEP
+  // the rows buffer
+  var rows: string[] = [];
 
-    const data = await parseCSV('training_data/eng.csv', start, end)
+  // iterate all lines of the stream/readline interface
+  for await (const line of rl) {
 
-    const formatted = data.map((row, batchIndex) => ({
-      data: row.text,
-      id: i + batchIndex,
-      metadata: { text: row.text },
-    }))
+    // if we have BUFSZ entries after pushing
+    if (UPSERT_ROWS_BUFSZ == rows.push(line)) {
 
-    await index.upsert(formatted)
+      // send the rows buffer
+      await send(language, rows, offset);
+
+      // empty the rows buffer
+      rows = [];
+
+      // increment id offset by BUFSZ
+      offset += UPSERT_ROWS_BUFSZ;
+
+    }
+
   }
+
+  // send leftover lines
+  await send(language, rows, offset);
+
 }
 
-seed()
+for (const dataset of datasets) {
+  const filepath = join(DATASETS_DIR, dataset);
+  const language = basename(filepath, '.csv') as Language;
+  const stream = fs.createReadStream(filepath);
+  seed(stream, language);
+}
