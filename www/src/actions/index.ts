@@ -25,7 +25,7 @@ export const checkProfanity = async ({ message }: { message: string }) => {
       }
     }
 
-    const res = await fetch('https://vector.profanity.dev', {
+    const res = await fetch(process.env.HONO_APP_URL ?? 'https://vector.profanity.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message }),
