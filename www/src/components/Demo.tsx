@@ -6,11 +6,14 @@ import { useState } from 'react'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Icons } from './Icons'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 
 const Demo = () => {
   const [message, setMessage] = useState<string>(
     'this is definitely not a swear word'
   )
+
+  const [language, setLanguage] = useState<string>('eng')
 
   const { data, mutate, isPending, error } = useMutation({
     mutationKey: ['check-profanity'],
@@ -41,16 +44,31 @@ const Demo = () => {
             className='bg-white h-9'
             value={message}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') mutate({ message })
+              if (e.key === 'Enter') mutate({ message, languages: [language] })
             }}
             onChange={({ target }) => {
               setMessage(target.value)
             }}
           />
+          <Select
+            disabled={isPending}
+            value={language}
+            onValueChange={value => {
+              setLanguage(value)
+            }}
+            >
+            <SelectTrigger className="w-[180px] bg-white">
+              <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="eng">English</SelectItem>
+              <SelectItem value="ita">Italian</SelectItem>
+            </SelectContent>
+          </Select>
           <Button
             disabled={isPending}
             className='h-9 w-full sm:w-fit'
-            onClick={() => mutate({ message })}>
+            onClick={() => mutate({ message, languages: [language] })}>
             Profanity check
           </Button>
         </div>

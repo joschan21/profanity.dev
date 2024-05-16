@@ -12,7 +12,7 @@ type APISuccess = {
   flaggedFor: string[] | undefined
 }
 
-export const checkProfanity = async ({ message }: { message: string }) => {
+export const checkProfanity = async ({ message, languages = ['eng'] }: { message: string, languages: string[] }) => {
   try {
     if (message.trim().split(/\s+/).length <= 1) {
       return { error: 'Please enter a longer text, at least 2 words.' }
@@ -25,10 +25,10 @@ export const checkProfanity = async ({ message }: { message: string }) => {
       }
     }
 
-    const res = await fetch('https://vector.profanity.dev', {
+    const res = await fetch(process.env.HONO_APP_URL ?? 'https://vector.profanity.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ message, languages }),
     })
 
     await redis.incr('served-requests')
