@@ -105,13 +105,15 @@ app.post('/', async (c) => {
     ])
 
     if (flaggedFor.size > 0) {
-      const sorted = Array.from(flaggedFor).sort((a, b) =>
+      const flaggedArr = Array.from(flaggedFor);
+      const sorted = flaggedArr.sort((a, b) =>
         a.score > b.score ? -1 : 1
-      )[0]
+      )
       return c.json({
         isProfanity: true,
-        score: sorted?.score,
-        flaggedFor: sorted?.text,
+        score: sorted[0]?.score,
+        flaggedFor: sorted[0]?.text,
+        flagged: flaggedArr
       })
     } else {
       const mostProfaneChunk = vectorRes.sort((a, b) =>
@@ -121,6 +123,7 @@ app.post('/', async (c) => {
       return c.json({
         isProfanity: false,
         score: mostProfaneChunk.score,
+        flagged: []
       })
     }
   } catch (err) {
